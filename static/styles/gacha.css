@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body { 
+    font-family: 'Inter', sans-serif; 
+}
+
+.result-card { 
+    transition: all 0.3s ease-in-out; 
+}
+
+.result-card.rarity-5 { 
+    background: linear-gradient(145deg, #fceabb, #f8b500); 
+    color: #4a2c00; 
+    border-color: #e6a700; 
+}
+
+.result-card.rarity-4 { 
+    background: linear-gradient(145deg, #e6d3ff, #b388ff); 
+    color: #3c1e70; 
+    border-color: #a36eff; 
+}
+
+.result-card.rarity-3 { 
+    background: linear-gradient(145deg, #dbeafe, #93c5fd); 
+    color: #1e40af; 
+    border-color: #60a5fa; 
+}
+
+.new-item { 
+    animation: fadeIn 0.5s ease-out; 
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
