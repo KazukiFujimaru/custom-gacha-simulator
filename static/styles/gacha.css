@@ -40,3 +40,18 @@ body {
         transform: translateY(0); 
     }
 }
+
+/* Modal */
+.result-card.rarity-6 { 
+    background: linear-gradient(145deg, #ffdde1, #ff9a8b); 
+    color: #5c0011; 
+    border-color: #ff8a78; 
+    box-shadow: 0 0 20px rgba(255, 100, 100, 0.6);
+}
+.modal {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+}

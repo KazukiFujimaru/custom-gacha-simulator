@@ -3,77 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulator Gacha - Flask & PCG</title>
+    <title>Custom Gacha Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/gacha.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .result-card { transition: all 0.3s ease-in-out; }
+        .result-card.rarity-6, .rarity-6.border-l-4 { border-color: #ff8a78; background: linear-gradient(145deg, #ffdde1, #ff9a8b); color: #5c0011; box-shadow: 0 0 20px rgba(255, 100, 100, 0.6);}
+        .result-card.rarity-5, .rarity-5.border-l-4 { border-color: #e6a700; background: linear-gradient(145deg, #fceabb, #f8b500); color: #4a2c00; }
+        .result-card.rarity-4, .rarity-4.border-l-4 { border-color: #a36eff; background: linear-gradient(145deg, #e6d3ff, #b388ff); color: #3c1e70; }
+        .result-card.rarity-3, .rarity-3.border-l-4 { border-color: #60a5fa; background: linear-gradient(145deg, #dbeafe, #93c5fd); color: #1e40af; }
+        .new-item { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal.hidden { opacity: 0; visibility: hidden; }
+        .options-group { transition: all 0.3s ease-in-out; max-height: 0; overflow: hidden; opacity: 0.5; }
+        .options-group.visible { max-height: 200px; opacity: 1; }
+    </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center p-4 sm:p-6">
 
+    <div class="w-full max-w-7xl mx-auto flex justify-end mb-4">
+        <button id="open-settings-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all">
+            ⚙️ Pengaturan
+        </button>
+    </div>
+
+    <div id="settings-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-8">
+            <h2 class="text-2xl font-bold mb-6 text-white border-b-2 border-gray-700 pb-3">Konfigurasi Gacha Dinamis</h2>
+            <form id="gacha-config-form" class="space-y-6">
+                <!-- PERBAIKAN: Pengaturan Global disesuaikan -->
+                <fieldset class="border border-gray-600 p-4 rounded-lg">
+                    <legend class="px-2 font-semibold text-lg text-purple-400">Pengaturan Global</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div class="flex items-center justify-between p-2 rounded-md bg-gray-900/50">
+                            <label for="pity-enabled" class="font-medium text-gray-300">Sistem Pity Aktif</label>
+                            <input type="checkbox" id="pity-enabled" class="h-6 w-6 rounded text-indigo-500 bg-gray-700 border-gray-600 focus:ring-indigo-600" checked>
+                        </div>
+                         <div>
+                            <label for="pulls-per-period" class="mb-1 block font-medium text-gray-300">Tarikan per Periode (misal per patch)</label>
+                            <input type="number" id="pulls-per-period" value="80" min="1" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                        </div>
+                    </div>
+                </fieldset>
+                
+                <fieldset class="border border-gray-600 p-4 rounded-lg">
+                    <legend class="px-2 font-semibold text-lg text-green-400">Pengaturan Konversi Mata Uang</legend>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                        <div>
+                           <label for="cost-per-pull" class="mb-1 block font-medium text-gray-300 text-center">Biaya per Tarikan</label>
+                           <input type="number" id="cost-per-pull" value="160" min="1" class="w-full md:w-48 bg-gray-900 border border-gray-700 rounded-md p-2 text-center">
+                        </div>
+                        <div class="font-bold text-2xl text-gray-500 mt-6">=</div>
+                        <div>
+                           <label for="cost-in-rupiah" class="mb-1 block font-medium text-gray-300 text-center">Setara Dengan Rupiah</label>
+                           <input type="number" id="cost-in-rupiah" value="30000" min="1" class="w-full md:w-48 bg-gray-900 border border-gray-700 rounded-md p-2 text-center">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div id="rarity-settings-container" class="space-y-4"></div>
+                <div class="flex justify-start pt-2">
+                    <button type="button" id="add-rarity-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                        + Tambah Rarity Baru
+                    </button>
+                </div>
+                <div class="flex justify-end space-x-4 pt-6">
+                    <button type="button" id="close-settings-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">Tutup</button>
+                    <button type="submit" id="save-settings-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">Simpan & Terapkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="w-full max-w-7xl mx-auto">
         <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Simulator Gacha Lanjutan</h1>
-            <p class="text-gray-400 mt-2">Ditenagai oleh Python, Flask, dan RNG Kualitas Tinggi (PCG).</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Custom Gacha Simulator</h1>
+            <p class="text-gray-400 mt-2">Menggunakan Python Flask dengan PRNG model PCG.</p>
         </header>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Kolom Kontrol dan Statistik -->
             <div class="lg:col-span-1 bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col space-y-6">
                 <div>
                     <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Kontrol Gacha</h2>
                     <div class="flex space-x-4">
-                        <button id="pull-1" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                            Tarikan x1
-                        </button>
-                        <button id="pull-10" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                            Tarikan x10
-                        </button>
+                        <button id="pull-1" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Pull x1</button>
+                        <button id="pull-10" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Pull x10</button>
                     </div>
                 </div>
-
                 <div>
                     <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Statistik Sesi</h2>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Tarikan:</span> <span id="total-pulls" class="font-bold text-lg text-white">0</span></div>
-                        <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Uang (Simulasi):</span> <span id="total-spent" class="font-bold text-lg text-white">Rp 0</span></div>
-                        <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Menuju Pity ★5:</span> <span id="pity-5" class="font-bold text-lg text-green-400">0</span></div>
-                        <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Menuju Pity ★4:</span> <span id="pity-4" class="font-bold text-lg text-blue-400">0</span></div>
-                         <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Jaminan Rate Up:</span> <span id="guaranteed-status" class="font-bold text-lg text-red-500">TIDAK AKTIF</span></div>
-                    </div>
+                    <div id="session-stats-container" class="space-y-3 text-sm"></div>
                 </div>
-
                 <div>
-                     <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Konfigurasi Rate</h2>
-                    <div class="space-y-3 text-sm text-gray-400">
-                        <div class="flex justify-between"><span>Rate Dasar ★5:</span> <span>{{ GACHA_CONFIG['rate_5_star'] * 100 }}%</span></div>
-                        <div class="flex justify-between"><span>Rate Dasar ★4:</span> <span>{{ GACHA_CONFIG['rate_4_star'] * 100 }}%</span></div>
-                        <div class="flex justify-between"><span>Pity Keras ★5 di:</span> <span>{{ GACHA_CONFIG['hard_pity_5_star'] }}</span></div>
-                        <div class="flex justify-between"><span>Pity Lunak ★5 mulai:</span> <span>{{ GACHA_CONFIG['soft_pity_start'] }}</span></div>
-                         <div class="flex justify-between"><span>Peluang Rate Up:</span> <span>{{ GACHA_CONFIG['rate_up_chance'] * 100 }}%</span></div>
-                    </div>
+                    <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Konfigurasi Aktif</h2>
+                    <div id="config-display-container" class="space-y-2 text-sm text-gray-400"></div>
                 </div>
             </div>
-
-            <!-- Kolom Hasil dan Riwayat -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Hasil Tarikan Terakhir -->
                 <div>
-                    <h2 class="text-xl font-bold mb-4">Hasil Tarikan Terakhir</h2>
+                    <h2 class="text-xl font-bold mb-4">Hasil Pull Terakhir</h2>
                     <div id="results-display" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[120px]">
-                         <div class="flex items-center justify-center text-gray-500 text-center col-span-full">Tekan tombol tarikan untuk memulai...</div>
+                        <div class="flex items-center justify-center text-gray-500 text-center col-span-full">Tekan tombol pull untuk memulai...</div>
                     </div>
                 </div>
-
-                <!-- Riwayat Tarikan -->
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Riwayat Tarikan</h2>
-                    <div id="history-log" class="bg-gray-800 p-4 rounded-2xl shadow-inner h-96 overflow-y-auto">
-                        <!-- Riwayat akan ditambahkan di sini oleh JavaScript -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">Riwayat Pull Lengkap</h2>
+                        <div id="history-log" class="bg-gray-800 p-4 rounded-2xl shadow-inner h-64 overflow-y-auto"></div>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">Hasil Tercatat (★4+)</h2>
+                        <div id="notable-pulls-log" class="bg-gray-800 p-4 rounded-2xl shadow-inner h-64 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="{{ url_for('static', filename='scripts/gacha.js') }}"></script>
 </body>
 </html>

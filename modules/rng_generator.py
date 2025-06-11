@@ -29,8 +29,8 @@ seed = create_seed()
 bitgen = PCG64(seed)
 rng = Generator(bitgen)
 
-print(seed)
-print(PCG64(seed))
-print(Generator(bitgen))
-print(bitgen.state)  # prints the internal state dictionary of PCG64
-print(rng.integers(0, 10))
+#print(seed)
+#print(PCG64(seed))
+#print(Generator(bitgen))
+#print(bitgen.state)  # prints the internal state dictionary of PCG64
+#print(rng.integers(0, 10))
