@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Gacha Simulator</title>
+    <title>Gacha Statistic Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -28,16 +29,15 @@
 <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center p-4 sm:p-6">
 
     <div class="w-full max-w-7xl mx-auto flex justify-end mb-4">
-        <a href="/statistik" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all">
-            📊 Pergi ke Analisis Statistik
+        <a href="/" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all">
+            🏡 Kembali ke Simulator
         </a>
     </div>
 
     <div id="settings-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-8">
-            <h2 class="text-2xl font-bold mb-6 text-white border-b-2 border-gray-700 pb-3">Konfigurasi Gacha Dinamis</h2>
+            <h2 class="text-2xl font-bold mb-6 text-white border-b-2 border-gray-700 pb-3">Konfigurasi Statistik Gacha</h2>
             <form id="gacha-config-form" class="space-y-6">
-                <!-- PERBAIKAN: Pengaturan Global disesuaikan -->
                 <fieldset class="border border-gray-600 p-4 rounded-lg">
                     <legend class="px-2 font-semibold text-lg text-purple-400">Pengaturan Global</legend>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -67,6 +67,13 @@
                     </div>
                 </fieldset>
 
+                <fieldset class="border border-gray-600 p-4 rounded-lg">
+                    <legend class="px-2 font-semibold text-lg text-blue-400">Tampilkan Statistik Rate Up untuk Rarity:</legend>
+                    <div id="selected-rarities-for-stats-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Pilih rarity mana yang akan disertakan dalam ringkasan "Statistik Rate Up".</p>
+                </fieldset>
+
                 <div id="rarity-settings-container" class="space-y-4"></div>
                 <div class="flex justify-start pt-2">
                     <button type="button" id="add-rarity-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-all">
@@ -83,21 +90,23 @@
 
     <div class="w-full max-w-7xl mx-auto">
         <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">Custom Gacha Simulator</h1>
-            <p class="text-gray-400 mt-2">Menggunakan Python Flask dengan PRNG model PCG.</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">Gacha Statistic Simulator</h1>
+            <p class="text-gray-400 mt-2">Analisis mendalam hasil gacha dengan ribuan simulasi.</p>
         </header>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-1 bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col space-y-6">
                 <div>
-                    <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Kontrol Gacha</h2>
-                    <div class="flex space-x-4">
-                        <button id="pull-1" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Pull x1</button>
-                        <button id="pull-10" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">Pull x10</button>
+                    <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Kontrol Statistik</h2>
+                    <div class="flex flex-col space-y-4">
+                        <div>
+                            <label for="num-simulations" class="mb-1 block font-medium text-gray-300">Jumlah Simulasi Pull</label>
+                            <input type="number" id="num-simulations" value="100000" min="1000" step="1000" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                            <p class="text-xs text-gray-500 mt-1">Semakin besar, semakin akurat (dan lambat).</p>
+                        </div>
+                        <button id="run-simulation-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                            📊 Jalankan Simulasi
+                        </button>
                     </div>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Statistik Sesi</h2>
-                    <div id="session-stats-container" class="space-y-3 text-sm"></div>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold mb-3 border-b-2 border-gray-700 pb-2">Konfigurasi Aktif</h2>
@@ -105,30 +114,23 @@
                 </div>
                 <div class="mt-auto pt-6">
                     <button id="open-settings-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all w-full">
-                        ⚙️ Pengaturan
+                        ⚙️ Pengaturan Statistik
                     </button>
                 </div>
             </div>
             <div class="lg:col-span-2 space-y-6">
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Hasil Pull Terakhir</h2>
-                    <div id="results-display" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[120px]">
-                        <div class="flex items-center justify-center text-gray-500 text-center col-span-full">Tekan tombol pull untuk memulai...</div>
-                    </div>
+                <div id="statistics-display" class="bg-gray-800 p-6 rounded-2xl shadow-inner min-h-[200px] flex flex-col">
+                    <div class="flex items-center justify-center text-gray-500 text-center flex-grow">Tekan "Jalankan Simulasi" untuk melihat hasilnya.</div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h2 class="text-xl font-bold mb-4">Riwayat Pull Lengkap</h2>
-                        <div id="history-log" class="bg-gray-800 p-4 rounded-2xl shadow-inner h-64 overflow-y-auto"></div>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold mb-4">Hasil Tercatat (★4+)</h2>
-                        <div id="notable-pulls-log" class="bg-gray-800 p-4 rounded-2xl shadow-inner h-64 overflow-y-auto"></div>
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Distribusi Rarity</h2>
+                    <div id="rarity-distribution-chart" class="bg-gray-800 p-6 rounded-2xl shadow-inner min-h-[300px] flex items-center justify-center text-gray-500 text-center">
+                        Grafik distribusi akan muncul di sini.
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='scripts/gacha.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/statistik.js') }}"></script>
 </body>
 </html>

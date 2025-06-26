@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # --- Konfigurasi Simulasi HSR ---
 GACHA_CONFIG = {
     'currency': { 'cost_in_rupiah': 30000 },
-    'pulls_per_period': 80,
+    'pulls_per_period': 70, # Perkiraan pull f2p per bulan
     'rarities': {
         '5': { 
             'rate': 0.006, 

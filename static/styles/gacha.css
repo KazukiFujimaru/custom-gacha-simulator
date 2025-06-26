@@ -55,3 +55,44 @@ body {
     opacity: 0;
     visibility: hidden;
 }
+
+.options-group { 
+    transition: all 0.3s ease-in-out; 
+    max-height: 0; 
+    overflow: hidden; 
+    opacity: 0.5; 
+}
+
+.options-group.visible { 
+    max-height: 200px; /* Cukup besar untuk menampung konten */
+    opacity: 1; 
+}
+
+/* --- BARU: Gaya untuk Kartu Statistik di Halaman Statistik --- */
+
+/* Warna Border untuk Kartu Statistik Rarity (dari permintaan sebelumnya) */
+.rarity-6-border { border-color: #ff8a78; } 
+.rarity-5-border { border-color: #e6a700; } 
+.rarity-4-border { border-color: #a36eff; } 
+.rarity-3-border { border-color: #60a5fa; } 
+
+/* Gaya untuk setiap kartu statistik per rarity */
+.rarity-stat-card {
+    display: flex; /* Menggunakan flexbox untuk layout di dalam kartu */
+    flex-direction: column; /* Konten tersusun vertikal */
+    height: 100%; /* Pastikan kartu mengisi tinggi grid-cell */
+    min-height: 200px; /* Beri tinggi minimum agar terlihat konsisten */
+    box-sizing: border-box; /* Pastikan padding tidak menambah lebar/tinggi di luar yang diharapkan */
+}
+
+/* Penyesuaian untuk label dan nilai di dalam kartu */
+.rarity-stat-card .flex.justify-between span:first-child {
+    white-space: nowrap; /* Mencegah label terpotong atau wrap ke baris berikutnya */
+    margin-right: 0.5rem; /* Sedikit jarak antar label dan nilai */
+}
+
+/* Jika ada kebutuhan untuk menyamakan tinggi baris teks numerik */
+.rarity-stat-card .font-semibold {
+    min-width: 60px; /* Beri lebar minimum pada nilai numerik agar rata */
+    text-align: right; /* Rata kanan nilai numerik */
+}
