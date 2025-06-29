@@ -33,17 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div>
                     <label for="rate-${rarity}" class="mb-1 block font-medium text-gray-300">Rate Dasar (%)</label>
-                    <input type="number" id="rate-${rarity}" value="${values.rate || 0}" step="0.1" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                    <input type="number" required id="rate-${rarity}" value="${values.rate || 0}" step="0.1" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                 </div>
                 
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
-                        <label for="hard-pity-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Hard Pity</label>
+                        <label for="hard-pity-enabled-${rarity}" class="font-medium text-gray-300"> Hard Pity</label>
                         <input type="checkbox" id="hard-pity-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${hardPityEnabled ? 'checked' : ''}>
                     </div>
                     <div id="hard-pity-options-${rarity}" class="options-group ${hardPityEnabled ? 'visible' : ''}">
                         <label for="hard-pity-${rarity}" class="mb-1 block font-medium text-gray-300 sr-only">Hard Pity</label>
-                        <input type="number" id="hard-pity-${rarity}" value="${values.hard_pity || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2" ${!hardPityEnabled ? 'disabled' : ''}>
+                        <input type="number" required id="hard-pity-${rarity}" value="${values.hard_pity || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2" ${!hardPityEnabled ? 'disabled' : ''}>
                     </div>
                 </div>
 
@@ -51,29 +51,29 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 <div class="border-t border-gray-600 pt-4 mt-4 space-y-4">
                     <div class="flex items-center justify-between">
-                        <label for="soft-pity-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Soft Pity</label>
+                        <label for="soft-pity-enabled-${rarity}" class="font-medium text-gray-300"> Soft Pity</label>
                         <input type="checkbox" id="soft-pity-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${softPityEnabled ? 'checked' : ''}>
                     </div>
                     <div id="soft-pity-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${softPityEnabled ? 'visible' : ''}">
                         <div>
                             <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Tarikan ke-</label>
-                            <input type="number" id="soft-pity-start-${rarity}" value="${values.soft_pity_start || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                            <input type="number" required id="soft-pity-start-${rarity}" value="${values.soft_pity_start || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                         <div>
                             <label for="soft-pity-increase-${rarity}" class="mb-1 block font-medium text-gray-300">Kenaikan Rate (%)</label>
-                            <input type="number" id="soft-pity-increase-${rarity}" value="${values.soft_pity_increase || 0}" min="0" step="0.1" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                            <input type="number" required id="soft-pity-increase-${rarity}" value="${values.soft_pity_increase || 0}" min="0" step="0.1" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                     </div>
                 </div>
                 <div class="border-t border-gray-600 pt-4 mt-4 space-y-4">
                     <div class="flex items-center justify-between">
-                        <label for="rate-up-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Rate Up</label>
+                        <label for="rate-up-enabled-${rarity}" class="font-medium text-gray-300"> Rate Up</label>
                         <input type="checkbox" id="rate-up-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${rateUpEnabled ? 'checked' : ''}>
                     </div>
                     <div id="rate-up-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${rateUpEnabled ? 'visible' : ''}">
                         <div>
                             <label for="rate-up-chance-${rarity}" class="mb-1 block font-medium text-gray-300">Peluang Rate Up (%)</label>
-                            <input type="number" id="rate-up-chance-${rarity}" value="${values.rate_up_chance || 50}" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                            <input type="number" required id="rate-up-chance-${rarity}" value="${values.rate_up_chance || 50}" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                         <div class="flex items-center justify-between p-2 rounded-md bg-gray-900/50">
                            <label for="guarantee-enabled-${rarity}" class="font-medium text-gray-300">Jaminan Rate Up</label>
@@ -213,10 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalPeriods = playerState.total_pulls / pullsPerPeriod;
 
         let statsHTML = `
-            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Tarikan:</span> <span class="font-bold text-lg text-white">${playerState.total_pulls.toLocaleString('id-ID')}</span></div>
-            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Periode:</span> <span class="font-bold text-lg text-white">${totalPeriods.toFixed(2)}</span></div>
-            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Mata Uang Gacha:</span> <span class="font-bold text-lg text-yellow-400">${totalGachaCurrency.toLocaleString('id-ID')}</span></div>
-            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Uang (Simulasi):</span> <span class="font-bold text-lg text-white">Rp ${totalRealCurrency.toLocaleString('id-ID', {maximumFractionDigits: 0})}</span></div>
+            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Pull:</span> <span class="font-bold text-lg text-white">${playerState.total_pulls.toLocaleString('id-ID')}</span></div>
+            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Periode dibutuhkan:</span> <span class="font-bold text-lg text-white">${totalPeriods.toFixed(2)}</span></div>
+            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Gacha Terpakai:</span> <span class="font-bold text-lg text-yellow-400">${totalGachaCurrency.toLocaleString('id-ID')}</span></div>
+            <div class="flex justify-between items-center"><span class="font-semibold text-gray-400">Total Biaya:</span> <span class="font-bold text-lg text-white">Rp ${totalRealCurrency.toLocaleString('id-ID', {maximumFractionDigits: 0})}</span></div>
         `;
         
         if (gachaConfig.pity_enabled) {
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     statsHTML += `<div class="flex justify-between items-center">
                         <span class="font-semibold text-gray-400">Pity ★${level}:</span>
                         <div class="flex items-center space-x-2">
-                            ${rateUpConfig.enabled && rateUpConfig.guarantee_enabled ? `<span class="font-bold text-xs ${isGuaranteed ? 'text-green-400' : 'text-red-500'}">${isGuaranteed ? 'Jaminan' : '50/50'}</span>` : ''}
+                            ${rateUpConfig.enabled && rateUpConfig.guarantee_enabled ? `<span class="font-bold text-xs ${isGuaranteed ? 'text-green-400' : 'text-red-500'}">${isGuaranteed ? 'Rate ON' : 'Rate OFF'}</span>` : ''}
                             <span class="font-bold text-lg text-cyan-400">${playerState.pity_counters[level]}</span>
                         </div>
                     </div>`;
@@ -241,14 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let configHTML = '';
         Object.keys(gachaConfig.rarities).sort((a,b) => b-a).forEach(level => {
              const config = gachaConfig.rarities[level];
-             let softPityText = 'N/A';
+             let softPityText = 'Tidak Dipakai';
              if (gachaConfig.pity_enabled && config.soft_pity.enabled && config.soft_pity.start > 0) {
                  softPityText = `Mulai di ${config.soft_pity.start} (+${(config.soft_pity.increase * 100).toFixed(1)}%/pull)`;
              }
              configHTML += `<div class="border-t border-gray-700 mt-2 pt-2">
                     <div class="flex justify-between font-bold text-yellow-300"><span>★${level}</span></div>
                     <div class="flex justify-between"><span>Rate Dasar:</span> <span>${(config.rate * 100).toFixed(2)}%</span></div>
-                    <div class="flex justify-between"><span>Hard Pity:</span> <span>${gachaConfig.pity_enabled && config.hard_pity > 0 ? config.hard_pity : 'N/A'}</span></div>
+                    <div class="flex justify-between"><span>Hard Pity:</span> <span>${gachaConfig.pity_enabled && config.hard_pity > 0 ? config.hard_pity : 'Tidak Dipakai'}</span></div>
                     <div class="flex justify-between"><span>Soft Pity:</span> <span class="text-right">${softPityText}</span></div>
                 </div>`;
         });
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     notableHTML += `<div class="text-xs text-green-400 mt-1"><strong>Rate Up:</strong> ${pulls.rate_up.join(', ')}</div>`;
                 }
                 if(pulls.regular.length > 0) {
-                    notableHTML += `<div class="text-xs text-gray-400 mt-1"><strong>Biasa:</strong> ${pulls.regular.join(', ')}</div>`;
+                    notableHTML += `<div class="text-xs text-gray-400 mt-1"><strong>Standar:</strong> ${pulls.regular.join(', ')}</div>`;
                 }
                 notableHTML += `</div>`;
             }
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pullNumber = startPullCount + index + 1;
             const logEntry = document.createElement('div');
             logEntry.className = `p-2 mb-2 rounded-md text-sm rarity-${item.rarity} border-l-4`;
-            logEntry.textContent = `#${pullNumber}: Anda mendapatkan [${'★'.repeat(item.rarity)}] ${item.name}`;
+            logEntry.textContent = `#${pullNumber}: [${'★'.repeat(item.rarity)}] ${item.name} diperoleh`;
             historyLog.prepend(logEntry);
         });
     }

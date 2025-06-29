@@ -28,9 +28,6 @@ def configure_routes(app):
         if not all([isinstance(pull_count, int), isinstance(current_state, dict), isinstance(config, dict)]):
             return jsonify({'error': 'Invalid request data'}), 400
 
-        rarities = config.get('rarities', {})
-        total_rate = sum(rarity_config.get('rate', 0) for rarity_config in rarities.values())
-
         if total_rate > 1.0:
             breakdown = " + ".join([
                 f"{rarity_config.get('rate', 0)*100:.1f}%" 
@@ -63,14 +60,27 @@ def configure_routes(app):
         data = request.json
         num_pulls = data.get('num_pulls', 100000)
         config = data.get('config')
-        selected_rarities_for_stats = data.get('selected_rarities_for_stats', []) 
+        selected_rarities_for_stats = data.get('selected_rarities_for_stats', [])
+        rarities = config.get('rarities', {})
+        total_rate = sum(rarity_config.get('rate', 0) for rarity_config in rarities.values()) 
         
-        # Jika tidak ada rarity yang dipilih, gunakan default 5
         if not selected_rarities_for_stats:
             selected_rarities_for_stats = [5]
 
         if not all([isinstance(num_pulls, int), isinstance(config, dict)]):
             return jsonify({'error': 'Invalid request data'}), 400
+
+        if total_rate > 1.0:
+            breakdown = " + ".join([
+                f"{rarity_config.get('rate', 0)*100:.1f}%" 
+                for rarity_config in rarities.values()
+            ])
+            return jsonify({
+                'error': (
+                    "Persentase peluang gacha harus berjumlah maksimal 100% dari semua rarity.\n"
+                    f"({breakdown} = {total_rate * 100:.1f}%)"
+                )
+            }), 400
 
         rng_stats = rng_generator.rng
 
