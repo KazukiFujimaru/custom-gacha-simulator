@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const addRarityBtn = document.getElementById('add-rarity-btn');
 
     // --- Logika Pengaturan ---
-    const rarityTemplate = (rarity, values = {}) => `
+    const rarityTemplate = (rarity, values = {}) => {
+        const hardPityEnabled = values.hard_pity_enabled !== false;
+        const softPityEnabled = values.soft_pity_enabled === true;
+        const rateUpEnabled = values.rate_up_enabled === true;
+
+        return `
         <fieldset class="border border-gray-700 p-4 rounded-lg rarity-config-group" data-rarity="${rarity}">
             <legend class="px-2 font-semibold text-lg text-yellow-400 flex justify-between items-center w-full">
                 <span>Pengaturan Bintang ★${rarity}</span>
@@ -30,18 +35,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     <label for="rate-${rarity}" class="mb-1 block font-medium text-gray-300">Rate Dasar (%)</label>
                     <input type="number" id="rate-${rarity}" value="${values.rate || 0}" step="0.1" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                 </div>
-                <div>
-                    <label for="hard-pity-${rarity}" class="mb-1 block font-medium text-gray-300">Hard Pity</label>
-                    <input type="number" id="hard-pity-${rarity}" value="${values.hard_pity || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label for="hard-pity-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Hard Pity</label>
+                        <input type="checkbox" id="hard-pity-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${hardPityEnabled ? 'checked' : ''}>
+                    </div>
+                    <div id="hard-pity-options-${rarity}" class="options-group ${hardPityEnabled ? 'visible' : ''}">
+                        <label for="hard-pity-${rarity}" class="mb-1 block font-medium text-gray-300 sr-only">Hard Pity</label>
+                        <input type="number" id="hard-pity-${rarity}" value="${values.hard_pity || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2" ${!hardPityEnabled ? 'disabled' : ''}>
+                    </div>
                 </div>
+
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 <div class="border-t border-gray-600 pt-4 mt-4 space-y-4">
                     <div class="flex items-center justify-between">
                         <label for="soft-pity-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Soft Pity</label>
-                        <input type="checkbox" id="soft-pity-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${values.soft_pity_enabled ? 'checked' : ''}>
+                        <input type="checkbox" id="soft-pity-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${softPityEnabled ? 'checked' : ''}>
                     </div>
-                    <div id="soft-pity-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${values.soft_pity_enabled ? 'visible' : ''}">
+                    <div id="soft-pity-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${softPityEnabled ? 'visible' : ''}">
                         <div>
                             <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Tarikan ke-</label>
                             <input type="number" id="soft-pity-start-${rarity}" value="${values.soft_pity_start || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
@@ -55,14 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="border-t border-gray-600 pt-4 mt-4 space-y-4">
                     <div class="flex items-center justify-between">
                         <label for="rate-up-enabled-${rarity}" class="font-medium text-gray-300">Aktifkan Rate Up</label>
-                        <input type="checkbox" id="rate-up-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${values.rate_up_enabled ? 'checked' : ''}>
+                        <input type="checkbox" id="rate-up-enabled-${rarity}" data-rarity="${rarity}" class="options-toggle h-6 w-6 rounded text-indigo-500 bg-gray-700" ${rateUpEnabled ? 'checked' : ''}>
                     </div>
-                    <div id="rate-up-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${values.rate_up_enabled ? 'visible' : ''}">
+                    <div id="rate-up-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${rateUpEnabled ? 'visible' : ''}">
                         <div>
                             <label for="rate-up-chance-${rarity}" class="mb-1 block font-medium text-gray-300">Peluang Rate Up (%)</label>
                             <input type="number" id="rate-up-chance-${rarity}" value="${values.rate_up_chance || 50}" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
-                        <!-- PERBAIKAN: Checkbox jaminan dipindahkan ke sini -->
                         <div class="flex items-center justify-between p-2 rounded-md bg-gray-900/50">
                            <label for="guarantee-enabled-${rarity}" class="font-medium text-gray-300">Jaminan Rate Up</label>
                            <input type="checkbox" id="guarantee-enabled-${rarity}" class="h-6 w-6 rounded text-indigo-500 bg-gray-700" ${values.guarantee_enabled ? 'checked' : ''}>
@@ -72,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </fieldset>
     `;
+    }
 
     function addDynamicListeners() {
         rarityContainer.addEventListener('click', (e) => {
@@ -81,18 +94,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         rarityContainer.addEventListener('change', (e) => {
             if (e.target.classList.contains('options-toggle')) {
-                const isSoftPity = e.target.id.includes('soft-pity');
                 const rarity = e.target.dataset.rarity;
-                const optionsDiv = document.getElementById(`${isSoftPity ? 'soft-pity' : 'rate-up'}-options-${rarity}`);
-                optionsDiv.classList.toggle('visible', e.target.checked);
+                let optionsDiv;
+                let inputElement;
+
+                if (e.target.id.includes('hard-pity-enabled')) {
+                    optionsDiv = document.getElementById(`hard-pity-options-${rarity}`);
+                    inputElement = document.getElementById(`hard-pity-${rarity}`);
+                    if (inputElement) {
+                        inputElement.disabled = !e.target.checked;
+                    }
+                } else if (e.target.id.includes('soft-pity-enabled')) {
+                    optionsDiv = document.getElementById(`soft-pity-options-${rarity}`);
+                } else if (e.target.id.includes('rate-up-enabled')) {
+                    optionsDiv = document.getElementById(`rate-up-options-${rarity}`);
+                }
+                
+                if (optionsDiv) {
+                    optionsDiv.classList.toggle('visible', e.target.checked);
+                }
             }
         });
     }
     
     function setupDefaultRarities() {
         rarityContainer.innerHTML = '';
-        rarityContainer.insertAdjacentHTML('beforeend', rarityTemplate(5, { rate: 0.6, hard_pity: 90, soft_pity_enabled: true, soft_pity_start: 74, soft_pity_increase: 6, rate_up_enabled: true, rate_up_chance: 50, guarantee_enabled: true }));
-        rarityContainer.insertAdjacentHTML('beforeend', rarityTemplate(4, { rate: 5.1, hard_pity: 10 }));
+        rarityContainer.insertAdjacentHTML('beforeend', rarityTemplate(5, { 
+            rate: 0.6, 
+            hard_pity: 90, 
+            hard_pity_enabled: true,
+            soft_pity_enabled: true, 
+            soft_pity_start: 74, 
+            soft_pity_increase: 6, 
+            rate_up_enabled: true, 
+            rate_up_chance: 50, 
+            guarantee_enabled: true 
+        }));
+        rarityContainer.insertAdjacentHTML('beforeend', rarityTemplate(4, { 
+            rate: 5.1, 
+            hard_pity: 10,
+            hard_pity_enabled: true
+        }));
         addDynamicListeners();
     }
     
@@ -100,18 +142,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingRarities = Array.from(rarityContainer.querySelectorAll('.rarity-config-group')).map(el => parseInt(el.dataset.rarity));
         let newRarityLevel = 6;
         while(existingRarities.includes(newRarityLevel)) newRarityLevel++;
-        rarityContainer.insertAdjacentHTML('afterbegin', rarityTemplate(newRarityLevel, { rate: 0.1, hard_pity: 100 }));
+        rarityContainer.insertAdjacentHTML('afterbegin', rarityTemplate(newRarityLevel, { rate: 0.1, hard_pity: 100, hard_pity_enabled: true }));
     });
 
     function readConfigFromUI() {
         const rarities = {};
         rarityContainer.querySelectorAll('.rarity-config-group').forEach(group => {
             const level = group.dataset.rarity;
+            
+            const hardPityEnabled = document.getElementById(`hard-pity-enabled-${level}`).checked;
             const softPityEnabled = document.getElementById(`soft-pity-enabled-${level}`).checked;
             const rateUpEnabled = document.getElementById(`rate-up-enabled-${level}`).checked;
+
             rarities[level] = {
                 rate: parseFloat(document.getElementById(`rate-${level}`).value) / 100,
-                hard_pity: parseInt(document.getElementById(`hard-pity-${level}`).value),
+                hard_pity: hardPityEnabled ? parseInt(document.getElementById(`hard-pity-${level}`).value) : 0,
                 soft_pity: {
                     enabled: softPityEnabled,
                     start: softPityEnabled ? parseInt(document.getElementById(`soft-pity-start-${level}`).value) : 0,
@@ -157,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function updateAllUI() {
-        // PERBAIKAN: Logika kalkulasi mata uang diperbaiki untuk akurasi dan kejelasan.
         const costPerPull = BigInt(gachaConfig.currency.cost_per_pull);
         const totalPulls = BigInt(playerState.total_pulls);
         const costInRupiah = gachaConfig.currency.cost_in_rupiah;
