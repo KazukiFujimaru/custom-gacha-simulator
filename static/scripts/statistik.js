@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div>
                     <label for="rate-${rarity}" class="mb-1 block font-medium text-gray-300">Rate Dasar (%)</label>
-                    <input type="number" id="rate-${rarity}" value="${values.rate || 0}" step="0.1" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                    <input type="number" id="rate-${rarity}" value="${values.rate || 0}" step="0.1" min="0" max="100" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                 </div>
                 <div>
                     <label for="hard-pity-${rarity}" class="mb-1 block font-medium text-gray-300">Hard Pity</label>
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div>
                             <label for="soft-pity-increase-${rarity}" class="mb-1 block font-medium text-gray-300">Kenaikan Rate (%)</label>
-                            <input type="number" id="soft-pity-increase-${rarity}" value="${values.soft_pity_increase || 0}" min="0" step="0.1" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
+                            <input type="number" id="soft-pity-increase-${rarity}" value="${values.soft_pity_increase || 0}" min="0" max="100" step="0.1" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                     </div>
                 </div>
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="flex justify-between"><span>Total Periode Tercover:</span> <span class="font-semibold">${data.total_periods_covered.toFixed(2)}</span></div>
             </div>
             <h3 class="text-xl font-bold text-white mb-4">Statistik Detail per Rarity</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-6">
         `;
         
         const sortedSelectedRarities = data.selected_rarities_for_stats.sort((a, b) => b - a);

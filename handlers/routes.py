@@ -22,9 +22,26 @@ def configure_routes(app):
         pull_count = data.get('count', 1)
         current_state = data.get('state')
         config = data.get('config')
+        rarities = config.get('rarities', {})
+        total_rate = sum(rarity_config.get('rate', 0) for rarity_config in rarities.values())
 
         if not all([isinstance(pull_count, int), isinstance(current_state, dict), isinstance(config, dict)]):
             return jsonify({'error': 'Invalid request data'}), 400
+
+        rarities = config.get('rarities', {})
+        total_rate = sum(rarity_config.get('rate', 0) for rarity_config in rarities.values())
+
+        if total_rate > 1.0:
+            breakdown = " + ".join([
+                f"{rarity_config.get('rate', 0)*100:.1f}%" 
+                for rarity_config in rarities.values()
+            ])
+            return jsonify({
+                'error': (
+                    "Persentase peluang gacha harus berjumlah maksimal 100% dari semua rarity.\n"
+                    f"({breakdown} = {total_rate * 100:.1f}%)"
+                )
+            }), 400
 
         results = []
         rng = rng_generator.rng
