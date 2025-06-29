@@ -230,6 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Harap pilih setidaknya satu rarity untuk ditampilkan statistiknya!");
             return;
         }
+        if (isNaN(numSimulationsInput.value) || numSimulationsInput.value < 1000 || numSimulationsInput.value > 1000000) {
+            alert('Jumlah simulasi harus antara 1.000 dan 1.000.000.');
+            return;
+        }
 
         runSimulationBtn.disabled = true;
         runSimulationBtn.classList.add('opacity-50', 'cursor-not-allowed');
