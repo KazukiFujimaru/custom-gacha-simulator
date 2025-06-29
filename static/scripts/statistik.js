@@ -259,7 +259,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error running simulation:', error);
-            statisticsDisplay.innerHTML = `<div class="text-red-500 text-center p-4">Error: ${error.message}</div>`;
+
+            let errorMessage = 'Terjadi kesalahan saat menjalankan simulasi.';
+
+            // Custom check for JSON stringify error (Infinity, NaN, etc.)
+            if (error instanceof SyntaxError || error.message.includes('Unexpected token') || error.message.includes('Infinity')) {
+                errorMessage = 'Konfigurasi tidak valid: Nilai seperti Infinity, NaN, atau undefined tidak didukung. Silahkan cek kembali pengaturan, khususnya cek pada statistik rarity yang ditampilkan agar persentase tidak bernilai 0 tanpa pengaturan pity aktif (nyalakan pity atau ubah persentase agar tidak 0)';
+            }
+
+            statisticsDisplay.innerHTML = `<div class="text-red-500 text-center p-4">Error: ${errorMessage}</div>`;
             rarityDistributionChart.innerHTML = `<div class="text-red-500 text-center p-4">Gagal membuat grafik.</div>`;
         } finally {
             runSimulationBtn.disabled = false;
