@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     statsHTML += `<div class="flex justify-between items-center">
                         <span class="font-semibold text-gray-400">Pity ★${level}:</span>
                         <div class="flex items-center space-x-2">
-                            ${rateUpConfig.enabled && rateUpConfig.guarantee_enabled ? `<span class="font-bold text-xs ${isGuaranteed ? 'text-green-400' : 'text-red-500'}">${isGuaranteed ? 'Rate ON' : 'Rate OFF'}</span>` : ''}
+                            ${rateUpConfig.enabled && rateUpConfig.guarantee_enabled ? `<span class="font-bold text-xs ${isGuaranteed ? 'text-green-400' : 'text-red-500'}">${isGuaranteed ? 'ON' : 'OFF'}</span>` : ''}
                             <span class="font-bold text-lg text-cyan-400">${playerState.pity_counters[level]}</span>
                         </div>
                     </div>`;
@@ -239,17 +239,29 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStatsContainer.innerHTML = statsHTML;
 
         let configHTML = '';
-        Object.keys(gachaConfig.rarities).sort((a,b) => b-a).forEach(level => {
+         Object.keys(gachaConfig.rarities).sort((a,b) => b-a).forEach(level => {
              const config = gachaConfig.rarities[level];
+             
              let softPityText = 'Tidak Dipakai';
              if (gachaConfig.pity_enabled && config.soft_pity.enabled && config.soft_pity.start > 0) {
                  softPityText = `Mulai di ${config.soft_pity.start} (+${(config.soft_pity.increase * 100).toFixed(1)}%/pull)`;
              }
+
+             // Logika baru untuk Rate Up
+             const rateUpConfig = config.rate_up;
+             let rateUpText = 'Tidak Dipakai';
+             if (rateUpConfig && rateUpConfig.enabled) {
+                 rateUpText = `${(rateUpConfig.chance * 100).toFixed(1)}%`;
+             }
+             let rateOnText = rateUpConfig && rateUpConfig.enabled ? 'Dipakai' : 'Tidak Dipakai';
+
              configHTML += `<div class="border-t border-gray-700 mt-2 pt-2">
                     <div class="flex justify-between font-bold text-yellow-300"><span>★${level}</span></div>
                     <div class="flex justify-between"><span>Rate Dasar:</span> <span>${(config.rate * 100).toFixed(2)}%</span></div>
                     <div class="flex justify-between"><span>Hard Pity:</span> <span>${gachaConfig.pity_enabled && config.hard_pity > 0 ? config.hard_pity : 'Tidak Dipakai'}</span></div>
                     <div class="flex justify-between"><span>Soft Pity:</span> <span class="text-right">${softPityText}</span></div>
+                    <div class="flex justify-between"><span>Rate Up:</span> <span>${rateUpText}</span></div>
+                    <div class="flex justify-between"><span>Rate-On:</span> <span>${rateOnText}</span></div>
                 </div>`;
         });
         configDisplayContainer.innerHTML = configHTML;
