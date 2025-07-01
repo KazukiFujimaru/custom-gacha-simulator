@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div id="soft-pity-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${softPityEnabled ? 'visible' : ''}">
                         <div>
-                            <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Tarikan ke-</label>
+                            <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Pull ke-</label>
                             <input type="number" required id="soft-pity-start-${rarity}" value="${values.soft_pity_start || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                         <div>

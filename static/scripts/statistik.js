@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div id="soft-pity-options-${rarity}" class="options-group grid grid-cols-1 gap-4 ${softPityEnabled ? 'visible' : ''}">
                         <div>
-                            <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Tarikan ke-</label>
+                            <label for="soft-pity-start-${rarity}" class="mb-1 block font-medium text-gray-300">Mulai di Pull ke-</label>
                             <input type="number" required id="soft-pity-start-${rarity}" value="${values.soft_pity_start || 0}" min="0" class="w-full bg-gray-900 border border-gray-700 rounded-md p-2">
                         </div>
                         <div>
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         runSimulationBtn.disabled = true;
         runSimulationBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        statisticsDisplay.innerHTML = `<div class="text-center text-gray-400">Menjalankan simulasi... Ini mungkin memakan waktu beberapa saat untuk ${numSimulationsInput.value.toLocaleString('id-ID')} tarikan.</div>`;
+        statisticsDisplay.innerHTML = `<div class="text-center text-gray-400">Menjalankan simulasi... Ini mungkin memakan waktu beberapa saat untuk ${numSimulationsInput.value.toLocaleString('id-ID')} Pull.</div>`;
         rarityDistributionChart.innerHTML = `<div class="text-center text-gray-400">Mempersiapkan grafik...</div>`;
 
         try {
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <h5 class="font-bold text-green-400 mb-2">Rate Up untuk Rarity ★${rarityLevel}</h5>
                                 <div class="space-y-1 text-sm">
                                     <div class="flex justify-between"><span>Jumlah Item Rate Up Diperoleh:</span> <span class="font-semibold">${rateUpStats.total_obtained.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex justify-between"><span>Rata-rata Tarikan per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
+                                    <div class="flex justify-between"><span>Rata-rata Pull per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Biaya per Rate Up:</span> <span class="font-semibold">Rp ${rateUpStats.avg_cost.toLocaleString('id-ID', {maximumFractionDigits: 0})}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Periode per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_periods.toFixed(2)}</span></div>
                                 </div>
