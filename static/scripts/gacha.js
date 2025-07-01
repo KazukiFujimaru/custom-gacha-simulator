@@ -247,13 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
                  softPityText = `Mulai di ${config.soft_pity.start} (+${(config.soft_pity.increase * 100).toFixed(1)}%/pull)`;
              }
 
-             // Logika baru untuk Rate Up
              const rateUpConfig = config.rate_up;
+
              let rateUpText = 'Tidak Dipakai';
-             if (rateUpConfig && rateUpConfig.enabled) {
+             if (rateUpConfig?.enabled) {
                  rateUpText = `${(rateUpConfig.chance * 100).toFixed(1)}%`;
              }
-             let rateOnText = rateUpConfig && rateUpConfig.enabled ? 'Dipakai' : 'Tidak Dipakai';
+
+             let rateOnText = 'Tidak Dipakai';
+             if (rateUpConfig?.enabled && rateUpConfig.guarantee_enabled) {
+                 rateOnText = 'Dipakai';
+             }
 
              configHTML += `<div class="border-t border-gray-700 mt-2 pt-2">
                     <div class="flex justify-between font-bold text-yellow-300"><span>★${level}</span></div>

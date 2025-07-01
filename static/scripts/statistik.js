@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsModal.classList.add('hidden');
     });
 
-    // PENAMBAHAN: Modifikasi fungsi ini untuk tampilan baru
+    // PERBAIKAN: Fungsi ini diperbarui untuk konsistensi dengan gacha.js
     function updateConfigDisplay() {
         let configHTML = '';
         Object.keys(gachaConfig.rarities).sort((a,b) => b-a).forEach(level => {
@@ -206,13 +206,17 @@ document.addEventListener('DOMContentLoaded', () => {
                  softPityText = `Mulai di ${config.soft_pity.start} (+${(config.soft_pity.increase * 100).toFixed(1)}%/pull)`;
              }
 
-             // Logika baru untuk Rate Up
              const rateUpConfig = config.rate_up;
+
              let rateUpText = 'Tidak Dipakai';
-             if (rateUpConfig && rateUpConfig.enabled) {
+             if (rateUpConfig?.enabled) {
                  rateUpText = `${(rateUpConfig.chance * 100).toFixed(1)}%`;
              }
-             let rateOnText = rateUpConfig && rateUpConfig.enabled ? 'Dipakai' : 'Tidak Dipakai';
+
+             let rateOnText = 'Tidak Dipakai';
+             if (rateUpConfig?.enabled && rateUpConfig.guarantee_enabled) {
+                 rateOnText = 'Dipakai';
+             }
 
              configHTML += `<div class="border-t border-gray-700 mt-2 pt-2">
                     <div class="flex justify-between font-bold text-yellow-300"><span>★${level}</span></div>
@@ -327,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <h5 class="font-bold text-green-400 mb-2">Rate Up untuk Rarity ★${rarityLevel}</h5>
                                 <div class="space-y-1 text-sm">
                                     <div class="flex justify-between"><span>Jumlah Item Rate Up Diperoleh:</span> <span class="font-semibold">${rateUpStats.total_obtained.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex justify-between"><span>Rata-rata Pull per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
+                                    <div class="flex justify-between"><span>Rata-rata Tarikan per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Biaya per Rate Up:</span> <span class="font-semibold">Rp ${rateUpStats.avg_cost.toLocaleString('id-ID', {maximumFractionDigits: 0})}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Periode per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_periods.toFixed(2)}</span></div>
                                 </div>
@@ -355,15 +359,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const values = sortedRarities.map(r => data.rarity_counts[r]);
         const backgroundColors = sortedRarities.map(r => {
             switch(r) {
-                case '10': return '#ffd700';  // Emas terang
-                case '9': return '#9eff00';   // Hijau neon
-                case '8': return '#00e0ff';   // Biru neon
-                case '7': return '#ff4ecd';   // Pink neon
-                case '6': return '#ff8a78';   // Merah muda cerah
-                case '5': return '#f8b500';   // Emas/oranye
-                case '4': return '#a36eff';   // Ungu
-                case '3': return '#60a5fa';   // Biru muda
-                default: return '#cccccc';    // Abu-abu (default)
+                case '10': return '#ffd700';
+                case '9': return '#9eff00';
+                case '8': return '#00e0ff';
+                case '7': return '#ff4ecd';
+                case '6': return '#ff8a78';
+                case '5': return '#f8b500';
+                case '4': return '#a36eff';
+                case '3': return '#60a5fa';
+                default: return '#cccccc';
             }
         });
 
