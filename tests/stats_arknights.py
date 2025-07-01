@@ -118,6 +118,6 @@ def run_arknights_simulation(num_pulls, config):
     plot_distribution(rarity_counts, num_pulls)
 
 if __name__ == "__main__":
-    TOTAL_PULLS = 300000
+    TOTAL_PULLS = 1000000
     run_arknights_simulation(TOTAL_PULLS, GACHA_CONFIG)
 

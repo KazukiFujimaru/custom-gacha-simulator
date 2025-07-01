@@ -109,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // PERBAIKAN: Default value untuk checkbox statistik diubah di sini
     function populateSelectedRaritiesCheckboxes(currentlySelectedRarities = [5, 4]) {
         selectedRaritiesForStatsContainer.innerHTML = '';
         const existingRarities = Array.from(rarityContainer.querySelectorAll('.rarity-config-group'))
@@ -178,8 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return {
             pity_enabled: document.getElementById('pity-enabled').checked,
+            // PENAMBAHAN: Baca status checkbox baru
+            exclude_3star_from_chart: document.getElementById('exclude-3star-from-chart').checked,
             pulls_per_period: parseInt(document.getElementById('pulls-per-period').value) || 1,
-            // Cukup baca apa yang ada di UI, tidak perlu default di sini
             selected_rarities_for_stats: selectedRarities,
             currency: {
                 cost_per_pull: parseInt(document.getElementById('cost-per-pull').value) || 1,
@@ -230,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Harap pilih setidaknya satu rarity untuk ditampilkan statistiknya!");
             return;
         }
-        if (isNaN(numSimulationsInput.value) || numSimulationsInput.value < 1000 || numSimulationsInput.value > 1000000) {
-            alert('Jumlah simulasi harus antara 1.000 dan 1.000.000.');
+        if (isNaN(numSimulationsInput.value) || numSimulationsInput.value < 1 || numSimulationsInput.value > 1000000) {
+            alert('Jumlah simulasi harus antara 1 dan 1.000.000.');
             return;
         }
 
@@ -266,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let errorMessage = 'Terjadi kesalahan saat menjalankan simulasi.';
 
-            // Custom check for JSON stringify error (Infinity, NaN, etc.)
             if (error instanceof SyntaxError || error.message.includes('Unexpected token') || error.message.includes('Infinity')) {
                 errorMessage = 'Konfigurasi tidak valid: Nilai seperti Infinity, NaN, atau undefined tidak didukung. Silahkan cek kembali pengaturan, khususnya cek pada statistik rarity yang ditampilkan agar persentase tidak bernilai 0 tanpa pengaturan pity aktif (nyalakan pity atau ubah persentase agar tidak 0)';
             }
@@ -344,11 +343,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const values = sortedRarities.map(r => data.rarity_counts[r]);
         const backgroundColors = sortedRarities.map(r => {
             switch(r) {
-                case '6': return '#ff8a78';
-                case '5': return '#f8b500';
-                case '4': return '#a36eff';
-                case '3': return '#60a5fa';
-                default: return '#cccccc';
+                case '10': return '#ffd700';  // Emas terang
+                case '9': return '#9eff00';   // Hijau neon
+                case '8': return '#00e0ff';   // Biru neon
+                case '7': return '#ff4ecd';   // Pink neon
+                case '6': return '#ff8a78';   // Merah muda cerah
+                case '5': return '#f8b500';   // Emas/oranye
+                case '4': return '#a36eff';   // Ungu
+                case '3': return '#60a5fa';   // Biru muda
+                default: return '#cccccc';    // Abu-abu (default)
             }
         });
 
@@ -371,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: `Distribusi Hasil Gacha dari ${data.total_pulls_simulated.toLocaleString('id-ID')} Tarikan`,
+                        text: `Distribusi Hasil Gacha dari ${data.total_pulls_simulated.toLocaleString('id-ID')} Pull`,
                         color: '#e2e8f0',
                         font: { size: 18 }
                     },
@@ -417,10 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial setup (urutan panggilan di sini sangat penting)
     setupDefaultRarities(); 
-    // PERBAIKAN: Set default centang untuk ★5 dan ★4 saat halaman pertama kali dimuat
     populateSelectedRaritiesCheckboxes([5, 4]); 
     setTimeout(() => {
-        // Submit form untuk memuat konfigurasi awal
         configForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }, 100); 
 });

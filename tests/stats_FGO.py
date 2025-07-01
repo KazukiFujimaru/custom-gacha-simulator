@@ -130,6 +130,6 @@ def run_fgo_simulation(paid_pulls, config):
     plot_distribution(rarity_counts, total_effective_pulls)
 
 if __name__ == "__main__":
-    TOTAL_PAID_PULLS = 300000  # Jumlah tarikan yang dibeli
+    TOTAL_PAID_PULLS = 1000000  # Jumlah tarikan yang dibeli
     run_fgo_simulation(TOTAL_PAID_PULLS, GACHA_CONFIG)
 

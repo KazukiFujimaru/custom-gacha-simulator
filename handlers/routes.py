@@ -64,6 +64,9 @@ def configure_routes(app):
         rarities = config.get('rarities', {})
         total_rate = sum(rarity_config.get('rate', 0) for rarity_config in rarities.values()) 
         
+        # PENAMBAHAN: Ambil opsi baru dari request
+        exclude_3star = config.get('exclude_3star_from_chart', False)
+
         if not selected_rarities_for_stats:
             selected_rarities_for_stats = [5]
 
@@ -101,26 +104,28 @@ def configure_routes(app):
             if result['is_rate_up']:
                 rate_up_counts[str(result['rarity'])] += 1
             total_pulls_simulated += 1
+        
+        # PENAMBAHAN: Hapus data ★3 jika opsi dipilih
+        if exclude_3star and '3' in rarity_counts:
+            del rarity_counts['3']
 
         cost_per_pull_in_game_currency = config['currency']['cost_per_pull']
         cost_in_rupiah_for_one_pull = config['currency']['cost_in_rupiah']
         pulls_per_period = config['pulls_per_period']
 
         total_gacha_currency = total_pulls_simulated * cost_per_pull_in_game_currency
-        total_real_currency = total_pulls_simulated * cost_in_rupiah_for_one_pull
+        total_real_currency = (total_gacha_currency / cost_per_pull_in_game_currency) * cost_in_rupiah_for_one_pull if cost_per_pull_in_game_currency > 0 else 0
         total_periods = total_pulls_simulated / pulls_per_period if pulls_per_period > 0 else 0
 
         # Calculate per-rarity statistics
         detailed_rarity_stats = {}
         all_configured_rarities = sorted([int(r) for r in config['rarities'].keys()], reverse=True)
 
-        # Filter and sort selected rarities to match config keys
         rarities_to_process = sorted([r for r in all_configured_rarities if r in selected_rarities_for_stats], reverse=True)
 
         for rarity_level in rarities_to_process:
             rarity_level_str = str(rarity_level)
             
-            # General stats for this rarity
             total_obtained_this_rarity = rarity_counts.get(rarity_level_str, 0)
             
             avg_pulls_this_rarity = num_pulls / total_obtained_this_rarity if total_obtained_this_rarity > 0 else float('inf')
@@ -134,7 +139,6 @@ def configure_routes(app):
                 'avg_periods': avg_periods_this_rarity,
             }
 
-            # Rate-up specific stats if enabled for this rarity
             rarity_config_data = config['rarities'].get(rarity_level_str, {})
             if rarity_config_data.get('rate_up', {}).get('enabled', False):
                 total_rate_up_this_rarity = rate_up_counts.get(rarity_level_str, 0)
@@ -155,11 +159,11 @@ def configure_routes(app):
 
         return jsonify({
             'total_pulls_simulated': total_pulls_simulated,
-            'rarity_counts': rarity_counts, # Tetap kembalikan untuk grafik
-            'rate_up_counts': rate_up_counts, # Tetap kembalikan jika diperlukan
+            'rarity_counts': rarity_counts,
+            'rate_up_counts': rate_up_counts,
             'selected_rarities_for_stats': selected_rarities_for_stats, 
             'total_gacha_currency_spent': total_gacha_currency,
             'total_real_currency_spent': total_real_currency,
             'total_periods_covered': total_periods,
-            'detailed_rarity_stats': detailed_rarity_stats # BARU: Statistik detail per rarity
+            'detailed_rarity_stats': detailed_rarity_stats
         })
