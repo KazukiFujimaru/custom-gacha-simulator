@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <h5 class="font-bold text-green-400 mb-2">Rate Up untuk Rarity ★${rarityLevel}</h5>
                                 <div class="space-y-1 text-sm">
                                     <div class="flex justify-between"><span>Jumlah Item Rate Up Diperoleh:</span> <span class="font-semibold">${rateUpStats.total_obtained.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex justify-between"><span>Rata-rata Tarikan per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
+                                    <div class="flex justify-between"><span>Rata-rata pull per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_pulls.toFixed(2)}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Biaya per Rate Up:</span> <span class="font-semibold">Rp ${rateUpStats.avg_cost.toLocaleString('id-ID', {maximumFractionDigits: 0})}</span></div>
                                     <div class="flex justify-between"><span>Rata-rata Periode per Rate Up:</span> <span class="font-semibold">${rateUpStats.avg_periods.toFixed(2)}</span></div>
                                 </div>
